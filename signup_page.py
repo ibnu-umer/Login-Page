@@ -1,44 +1,24 @@
 import customtkinter as ctk
 from PIL import ImageTk, Image
-# import joblib
-# import pandas as pd
-# import tensorflow as tf
+import joblib
 
 
 
+users = {"riyas":"riyas777", "rishana":"rinu@123", "Shamil":"shanumon", "Shaha":"shaimol", "a":"aaa"}
 
+def pass_prep(password):
+    length = len(password)
+    char, dig, sym = 0, 0, 0
+    
+    for i in password:
+        if i.isalpha():
+            char += 1
+        elif i.isdigit():
+            dig += 1
+        else:
+            sym += 1
 
-# users = {}
-# model_path = "Models\Pass-strength-Predictor"
-# model = tf.keras.models.load_model(model_path)
-# model = joblib.load("Models/Pass_stren_predictor.joblib")
-
-
-
-# def pass_to_df(password): #A function to make dataframe from a password for make the prediction.
-#     dic = {}
-#     length = len(password)
-#     char = 0
-#     dig = 0
-#     sym = 0
-#     for i in password:
-#         if i.isalpha():
-#             char += 1
-#         elif i.isdigit():
-#             dig += 1
-#         else:
-#             sym += 1
-
-#     dic["Length"] = [length]   # Adding Key Value pair to the dic dictionary
-#     dic["Characters"] = [char]
-#     dic["Digits"] = [dig]
-#     dic["Symbols"] = [sym]
-
-#     to_df = pd.DataFrame(dic) # Converting the dic to dataframe
-#     return to_df # Returning dataframe
-
-
-
+        return [[length, char, dig, sym]]
 
 
 def open_signup_window():
@@ -49,49 +29,90 @@ def open_signup_window():
     su.title("SignUp Page")
     su.config(background="white")
 
-    #Image
-    # img1 = Image.open("/Users/user/OneDrive/Desktop/VSCode Python/Dependencies/signup.jpg")
-    # img1 = img1.resize((330,330))
-    # img1 = ImageTk.PhotoImage(img1)
-    # panel = Label(su, image = img1, borderwidth=0)
-    # panel.place(x=55, y=85)
+    # Image
+    img = ctk.CTkImage(light_image=Image.open("static/log_image.jpeg"), size=(300, 300))
+    panel = ctk.CTkLabel(su, text='', image=img)
+    panel.place(x=25, y=115)
 
+    signup_status = False
 
-    # def signup():
-    #     global username, password
-    #     username = user.get()
-    #     Frame(frame, width=92, height=20, bg="white").place(x=40, y=93)
-    #     Frame(frame, width=300, height=35, bg="white").place(x=40, y=140)
-    #     Frame(frame, width=150, height=20, bg="white").place(x=40, y=198)
-    #     if username == "Username" or username == "":
-    #         Label(frame, text="Enter username", fg="red", bg="white", font=("Microsoft YaMel U1 Light",9)).place(x=40, y=93)
-    #     else:
-    #         user_name = user.get()
-    #         password = code.get()
-    #         df_pass = pass_to_df(password)
-    #         pas_strength = model.predict(df_pass)
-    #         if pas_strength == 0:
-    #             Label(frame, text="Weak Password, Use numbers, alphabets and\nsymbols to increase strength.", bg="white", fg="red", font=("Microsoft YaMel U1 Light", 8)).place(x=35, y=140)
-    #         else:
-    #             if pas_strength == 1:
-    #                 Label(frame, text="Password Status :", bg="white", fg="black", font=("Microsoft YaMel U1 Light", 8)).place(x=35, y=140)
-    #                 Label(frame, text="Good", bg="white", fg="green", font=("Microsoft YaMel U1 Light", 8)).place(x=130, y=140)
-    #             elif pas_strength == 2:
-    #                 Label(frame, text="Password Status :", bg="white", fg="black", font=("Microsoft YaMel U1 Light", 8)).place(x=35, y=140)
-    #                 Label(frame, text="Strong", bg="white", fg="violet", font=("Microsoft YaMel U1 Light", 8)).place(x=130, y=140)
-    #             pass_word = code.get()
-    #             confirm_code = re_code.get()
-    #             if confirm_code == "Re-Enter Password" or "":
-    #                 Label(frame, text="Confirm Password", fg="red", bg="white", font=("Microsoft YaMel U1 Light", 9)).place(x=40, y=198)
-    #             elif pass_word != confirm_code:
-    #                 Label(frame, text="Confirm Password", fg="red", bg="white", font=("Microsoft YaMel U1 Light", 9)).place(x=40, y=198)
-    #             else:
-    #                 users[user_name] = pass_word
-    #                 Label(frame, text="Account Created. Signup Succesful", fg="green", bg="white", font=("Microsoft YaMel U1 Light",9)).place(x = 40, y=280)
-    #                 print(users)
+    def signup():
+        
+        global username, password, signup_status
+        
+        # Frames to hide the prev warning messages or entry columns
+        ctk.CTkFrame(frame, width=140, height=20, bg_color="white", fg_color='white').place(x=25, y=105)
+        ctk.CTkFrame(frame, width=140, height=20, bg_color="white", fg_color='white').place(x=25, y=166)
+        ctk.CTkFrame(frame, width=140, height=20, bg_color="white", fg_color='white').place(x=25, y=223)
 
+        username = user.get()
+        
+        if username == "Username" or username == "":
+            username_empty_errror = ctk.CTkLabel(frame, text=" ! Enter username", height=10, fg_color="white",
+                                            bg_color="white", font=("Microsoft YaMel U1 Light",9))
+            username_empty_errror.configure(text_color='red')
+            username_empty_errror.place(x=25, y=110)
+       
+        elif username in users.keys():
+            username_exist_errror = ctk.CTkLabel(frame, text=" ! Username Already Exist", height=10, fg_color="white",
+                                            bg_color="white", font=("Microsoft YaMel U1 Light",9))
+            username_exist_errror.configure(text_color='red')
+            username_exist_errror.place(x=25, y=110)
+        
+        else:
+            user_name = user.get()
+            password = code.get()
+            
+            if password == "Password" or password == "":
+                password_empty_error = ctk.CTkLabel(frame, text=" ! Enter Password", height=10, fg_color="white",
+                                            bg_color="white", font=("Microsoft YaMel U1 Light",9))
+                password_empty_error.configure(text_color='red')
+                password_empty_error.place(x=25, y=170)
+                
+            else:
+                # pass_prep = pass_prep(password)
+                pass_strength = 2 # model.predict(pass_prep)
+                
+                if pass_strength == 0:
+                    pass_status = "Weak"
+                    weak_pass = ctk.CTkLabel(frame, text=f" ! Passowrd Status : {pass_status}", height=10, fg_color="white",
+                                                bg_color="white", font=("Microsoft YaMel U1 Light",9))
+                    weak_pass.configure(text_color='red')
+                    weak_pass.place(x=25, y=170)
+                
+                else:
+                    if pass_strength == 1:
+                        pass_status = "Good"
+                        
+                    elif pass_strength == 2:
+                        pass_status = "Strong"
+                        
+                    approved_pass = ctk.CTkLabel(frame, text=f" ! Passowrd Status : {pass_status}", height=10, fg_color="white",
+                                                bg_color="white", font=("Microsoft YaMel U1 Light",9))
+                    approved_pass.configure(text_color='green')
+                    approved_pass.place(x=25, y=170)
 
+                password = code.get()
+                confirm_code = re_code.get()
+                
+                if confirm_code == "Re-Enter Password" or confirm_code == "":
+                    recode_empty_error = ctk.CTkLabel(frame, text=" ! Confirm Password", fg_color="white",
+                                                      bg_color="white", font=("Microsoft YaMel U1 Light", 9))
+                    recode_empty_error.configure(text_color='red')
+                    recode_empty_error.place(x=25, y=223)
+                    
+                elif password != confirm_code:
+                    recode_match_error = ctk.CTkLabel(frame, text=" ! Password Mismatch", fg_color="white",
+                                                      bg_color="white", font=("Microsoft YaMel U1 Light", 9))
+                    recode_match_error.configure(text_color='red')
+                    recode_match_error.place(x=25, y=223)
+                    
+                else:
+                    users[user_name] = password
+                    su.destroy()
+                    
 
+    # The Form container
     frame = ctk.CTkFrame(su, width=300, height=400, bg_color="White",
                          fg_color='white', border_width=1, border_color='gray')
     frame.place(x=360, y=50)
@@ -167,18 +188,12 @@ def open_signup_window():
     re_code.bind("<FocusIn>", on_enter)
     re_code.bind("<FocusOut>", on_leave)
     re_code.place(x=20, y=188)
-    
-
-    # #A Border Line under entry columns
-    # ctk.CTkFrame(frame, width=250, height=1, bg_color="black").place(x=40, y=90)
-    # ctk.CTkFrame(frame, width=250, height=1, bg_color="black").place(x=40, y=138)
-    # ctk.CTkFrame(frame, width=250, height=1, bg_color="black").place(x=40, y=196)
 
 
-    #SignUp Button
+    # SignUp Button
     sign_button = ctk.CTkButton(frame, width=150, height=35, text="Sign Up", font=("Helvetica", 22, "bold"),
                             corner_radius=70, bg_color="white", fg_color="#57a1f8",cursor="hand2",
-                            )
+                            command=signup)
     sign_button.configure(text_color='white')
     sign_button.place(x=70, y= 260)
 
@@ -194,12 +209,10 @@ def open_signup_window():
                                   )
     signin_button.configure(text_color='gray')
     signin_button.place(x=182, y=346)
-
-
-
-
+    
 
     su.mainloop()
 
 
-open_signup_window()
+if __name__ == "__main__":
+    open_signup_window()
