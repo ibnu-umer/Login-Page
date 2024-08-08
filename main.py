@@ -36,8 +36,6 @@ class App:
         self.app.title(self.title)
         self.app.geometry(self.geometry)
         self.app.resizable(height=self.resizable, width=self.resizable)
-        icon_photo = PhotoImage(file="static/figma_logo_icon1.png")
-        self.app.iconphoto(False, icon_photo)
         
         
         # self.signin_frame = self.SignInFrame(self.app, height=self.frame_height, width=self.frame_width)
