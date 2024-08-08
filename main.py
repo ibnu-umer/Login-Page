@@ -26,7 +26,6 @@ class App:
         else:
             self.first_color = 'white'
             self.secondary_color = 'black'
-            
         
         
         # Theme
@@ -37,24 +36,20 @@ class App:
         self.app.geometry(self.geometry)
         self.app.resizable(height=self.resizable, width=self.resizable)
         
-        
-        # self.signin_frame = self.SignInFrame(self.app, height=self.frame_height, width=self.frame_width)
-        # self.signup_frame = self.SignUpFrame(self.app, height=self.frame_height, width=self.frame_width)
         self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
-        
         self.homepage.place(x=0, y=0)
         
         self.app.mainloop()
-        
+   
         
     def SignInFrame(self, master, height: int = None, width: int = None):
         
         mainFrame = ctk.CTkFrame(master, height=height, width=width, fg_color=self.first_color)
         
         # Main Image
-        img = ctk.CTkImage(light_image=Image.open("static/log_image.jpeg"), size=(300, 300))
+        img = ctk.CTkImage(light_image=Image.open("static/signin_img.png"), size=(300, 300))
         img_frame = ctk.CTkLabel(mainFrame, text='', image=img)
-        img_frame.place(x=25, y=115)
+        img_frame.place(x=25, y=100)
         
         # Form Frame
         frame = ctk.CTkFrame(mainFrame, width=300, height=400, bg_color=self.first_color, fg_color=self.first_color, border_width=1)
@@ -178,10 +173,18 @@ class App:
                                     command= lambda: self.switch_frames(mainFrame, 'signup'))
         signup_button.configure(text_color='gray')
         signup_button.place(x=178, y=326)
+        
+        
+        # Back Button
+        back_img = ctk.CTkImage(light_image=Image.open('static/back_button.png'), dark_image=Image.open('static/back_button_1.png'),
+                                size=(20,20))
+        back_button = ctk.CTkButton(mainFrame, text='', width=10, height=10, image=back_img, cursor='hand2', 
+                                    fg_color=self.first_color, bg_color=self.first_color, hover=False,
+                                    command=lambda : self.switch_frames(mainFrame, 'homepage'))
+        back_button.place(x=10, y=10)
             
         
         return mainFrame
-    
     
     
     def SignUpFrame(self, master, height: int = None, width: int = None):
@@ -189,9 +192,9 @@ class App:
         mainFrame = ctk.CTkFrame(master, height=height, width=width, fg_color=self.first_color)
         
         # Main Image
-        img = ctk.CTkImage(light_image=Image.open("static/log_image.jpeg"), size=(300, 300))
+        img = ctk.CTkImage(light_image=Image.open("static/signup_img.png"), size=(300, 300))
         img_frame = ctk.CTkLabel(mainFrame, text='', image=img)
-        img_frame.place(x=25, y=115)
+        img_frame.place(x=25, y=100)
         
         
         # The Form container
@@ -203,7 +206,7 @@ class App:
         heading = ctk.CTkLabel(mainFrame, text="Sign Up", fg_color=self.first_color, bg_color=self.first_color,
                             font=("Microsoft YaMel U1 Light", 32, "bold"))
         heading.configure(text_color="#57a1f8")
-        heading.place(x=445, y=30)
+        heading.place(x=442, y=30)
 
 
         #Functions to make username visible and invisible
@@ -377,6 +380,15 @@ class App:
                                     command=lambda : self.switch_frames(mainFrame, 'signin'))
         signin_button.configure(text_color='gray')
         signin_button.place(x=182, y=326)
+        
+        
+        # Back Button
+        back_img = ctk.CTkImage(light_image=Image.open('static/back_button.png'), dark_image=Image.open('static/back_button_1.png'),
+                                size=(20,20))
+        back_button = ctk.CTkButton(mainFrame, text='', width=10, height=10, image=back_img, cursor='hand2', 
+                                    fg_color=self.first_color, bg_color=self.first_color, hover=False,
+                                    command=lambda : self.switch_frames(mainFrame, 'homepage'))
+        back_button.place(x=10, y=10)
 
         
         return mainFrame
@@ -387,7 +399,7 @@ class App:
         mainFrame = ctk.CTkFrame(master, height=height, width=width, fg_color=self.first_color)
         
         # Main Image
-        img = ctk.CTkImage(dark_image=Image.open("static/homepage.png"), size=(300, 300))
+        img = ctk.CTkImage(dark_image=Image.open("static/homepage_white.png"), light_image=Image.open('static/homepage.png'), size=(300, 300))
         img_frame = ctk.CTkLabel(mainFrame, text='', image=img)
         img_frame.place(x=200, y=115)
         
@@ -416,11 +428,18 @@ class App:
                                       font=('Helvetica', 23, 'bold'), fg_color="transparent", bg_color="transparent")
             user_title.configure(text_color=self.secondary_color)
             user_title.place(x=15, y=15)
+            
+        # Mode Change
+        mode_img = ctk.CTkImage(dark_image=Image.open('static/dark_Mode.png'), light_image=Image.open('static/white_Mode.png'),
+                                size=(35, 35))
+        mode_button = ctk.CTkButton(mainFrame, text='', image=mode_img, height=15, width=35, corner_radius=60,
+                                    fg_color=self.first_color, bg_color=self.first_color, hover_color=self.first_color,
+                                    cursor='hand2', command=self.change_mode)
         
+        mode_button.place(x=0, y=450)
         
         return mainFrame
         
-    
     
     def switch_frames(self, current_frame, frame_to_open):
         
@@ -436,8 +455,7 @@ class App:
         else:
             self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
             self.homepage.place(x=0, y=0)
-            
-            
+               
             
     def logout(self):
         
@@ -448,8 +466,25 @@ class App:
         self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
         self.homepage.place(x=0, y=0)
         
+    
+    def change_mode(self):
         
+        if self.appearance_mode == 'dark':
+            self.appearance_mode = 'light'
+            ctk.set_appearance_mode(self.appearance_mode)
+            self.first_color = 'white'
+            self.secondary_color = 'black'
+            
+        else:
+            self.appearance_mode = 'dark'
+            ctk.set_appearance_mode(self.appearance_mode)
+            self.first_color = 'black'
+            self.secondary_color = 'white'
         
+        self.homepage.place_forget()
+        
+        self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
+        self.homepage.place(x=0, y=0)
         
         
         
