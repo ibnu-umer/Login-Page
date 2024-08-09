@@ -18,16 +18,15 @@ class App:
         
         self.login_status = False
         
-
+        # Fetching data from the database
         data = open('database.txt', 'r')
         data = data.read()
         # Convert the string to a dictionary
         self.users = ast.literal_eval(data)
 
-        
-        
         self.user = None
         
+        # Color setting
         if appearance_mode == "dark":
             self.first_color = 'black'
             self.secondary_color = 'white'
@@ -36,23 +35,24 @@ class App:
             self.secondary_color = 'black'
         
         
-        # Theme
+        # Mode of the app
         ctk.set_appearance_mode(self.appearance_mode)
         
+        # Initialising app window
         self.app = ctk.CTk()
         self.app.title(self.title)
         self.app.geometry(self.geometry)
         self.app.resizable(height=self.resizable, width=self.resizable)
         
-        self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
+        self.homepage = self.HomePage()
         self.homepage.place(x=0, y=0)
         
         self.app.mainloop()
    
         
-    def SignInFrame(self, master, height: int = None, width: int = None):
+    def SignInFrame(self):
         
-        mainFrame = ctk.CTkFrame(master, height=height, width=width, fg_color=self.first_color)
+        mainFrame = ctk.CTkFrame(self.app, height=self.frame_height, width=self.frame_width, fg_color=self.first_color)
         
         # Main Image
         img = ctk.CTkImage(light_image=Image.open("static/signin_img.png"), size=(300, 300))
@@ -195,9 +195,9 @@ class App:
         return mainFrame
     
     
-    def SignUpFrame(self, master, height: int = None, width: int = None):
+    def SignUpFrame(self):
         
-        mainFrame = ctk.CTkFrame(master, height=height, width=width, fg_color=self.first_color)
+        mainFrame = ctk.CTkFrame(self.app, height=self.frame_height, width=self.frame_width, fg_color=self.first_color)
         
         # Main Image
         img = ctk.CTkImage(light_image=Image.open("static/signup_img.png"), size=(300, 300))
@@ -322,8 +322,8 @@ class App:
                     password_empty_error.place(x=0, y=3)
                     
                 else:
-                    # pass_prep = pass_prep(password)
-                    pass_strength = 2 # model.predict(pass_prep)
+                    
+                    pass_strength = 2
                     
                     if pass_strength == 0:
                         pass_status = "Weak"
@@ -405,9 +405,9 @@ class App:
         return mainFrame
     
     
-    def HomePage(self, master, height: int = None, width: int = None):
+    def HomePage(self):
         
-        mainFrame = ctk.CTkFrame(master, height=height, width=width, fg_color=self.first_color)
+        mainFrame = ctk.CTkFrame(self.app, height=self.frame_height, width=self.frame_width, fg_color=self.first_color)
         
         # Main Image
         img = ctk.CTkImage(dark_image=Image.open("static/homepage_white.png"), light_image=Image.open('static/homepage.png'), size=(300, 300))
@@ -456,15 +456,15 @@ class App:
         
         current_frame.place_forget()
         if frame_to_open == 'signup':
-            self.signup_frame = self.SignUpFrame(self.app, height=self.frame_height, width=self.frame_width)
+            self.signup_frame = self.SignUpFrame()
             self.signup_frame.place(x=0, y=0)
         
         elif frame_to_open == 'signin':
-            self.signin_frame = self.SignInFrame(self.app, height=self.frame_height, width=self.frame_width)
+            self.signin_frame = self.SignInFrame()
             self.signin_frame.place(x=0, y=0)
             
         else:
-            self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
+            self.homepage = self.HomePage()
             self.homepage.place(x=0, y=0)
                
             
@@ -477,7 +477,7 @@ class App:
         self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
         self.homepage.place(x=0, y=0)
         
-    
+    # Mode Changing
     def change_mode(self):
         
         if self.appearance_mode == 'dark':
@@ -494,7 +494,7 @@ class App:
         
         self.homepage.place_forget()
         
-        self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
+        self.homepage = self.HomePage()
         self.homepage.place(x=0, y=0)
         
         
