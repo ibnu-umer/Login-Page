@@ -2,6 +2,8 @@ import customtkinter as ctk
 from PIL import Image
 import time
 import ast
+from tensorflow.keras.models import load_model
+import numpy as np
 
 
 
@@ -33,6 +35,9 @@ class App:
         else:
             self.first_color = 'white'
             self.secondary_color = 'black'
+        
+        # Loading the password strength predicting model
+        self.pas_stren_model = load_model('models/Pass-stren-pred-Model.keras')
         
         
         # Mode of the app
@@ -283,12 +288,32 @@ class App:
         re_code.place(x=20, y=180)
         
         
+        # Preprocess password and return arr to input to the model
+        def prep_pass(password):
+            
+            length = len(password)
+            dig, char, sym = 0, 0, 0 
+            
+            for i in password:
+                
+                if i.isdigit():
+                    dig += 1
+                
+                elif i.isalpha():
+                    char += 1
+                    
+                else:
+                    sym += 1
+            
+            list = [[length, char, dig, sym]]
+            arr = np.array(list)
+            
+            return arr
+        
         
         def signup():
         
-            global username, password, signup_status
-            
-            # Frames to hide the prev warning messages or entry columns
+            # Frames to hide the prev warning messages of entry columns
             frame1 = ctk.CTkFrame(frame, width=140, height=20, bg_color=self.first_color, fg_color=self.first_color)
             frame2 = ctk.CTkFrame(frame, width=140, height=20, bg_color=self.first_color, fg_color=self.first_color)
             frame3 = ctk.CTkFrame(frame, width=140, height=20, bg_color=self.first_color, fg_color=self.first_color)
@@ -323,7 +348,10 @@ class App:
                     
                 else:
                     
-                    pass_strength = 2
+                    # Predicting password strength using a ML Model
+                    prepped_pass = prep_pass(password)
+                    pass_strength_conf = self.pas_stren_model.predict(prepped_pass)
+                    pass_strength = np.argmax(pass_strength_conf)
                     
                     if pass_strength == 0:
                         pass_status = "Weak"
@@ -344,31 +372,31 @@ class App:
                         approved_pass.configure(text_color='green')
                         approved_pass.place(x=0, y=3)
 
-                    password = code.get()
-                    confirm_code = re_code.get()
-                    
-                    if confirm_code == "Re-Enter Password" or confirm_code == "":
-                        recode_empty_error = ctk.CTkLabel(frame3, text=" ! Confirm Password", fg_color=self.first_color,
-                                                        bg_color=self.first_color, font=("Microsoft YaMel U1 Light", 9))
-                        recode_empty_error.configure(text_color='red')
-                        recode_empty_error.place(x=0, y=3)
+                        password = code.get()
+                        confirm_code = re_code.get()
                         
-                    elif password != confirm_code:
-                        recode_match_error = ctk.CTkLabel(frame3, text=" ! Password Mismatch", fg_color=self.first_color,
-                                                        bg_color=self.first_color, font=("Microsoft YaMel U1 Light", 9))
-                        recode_match_error.configure(text_color='red')
-                        recode_match_error.place(x=0, y=3)
-                        
-                    else:
-                        self.users[user_name] = password
-                        data = open('database.txt', 'w')
-                        data.write(str(self.users))
-                        
-                        self.user = user_name
-                        self.login_status = True
+                        if confirm_code == "Re-Enter Password" or confirm_code == "":
+                            recode_empty_error = ctk.CTkLabel(frame3, text=" ! Confirm Password", height=10, fg_color=self.first_color,
+                                                            bg_color=self.first_color, font=("Microsoft YaMel U1 Light", 9))
+                            recode_empty_error.configure(text_color='red')
+                            recode_empty_error.place(x=0, y=3)
+                            
+                        elif password != confirm_code:
+                            recode_match_error = ctk.CTkLabel(frame3, text=" ! Password Mismatch", height=10, fg_color=self.first_color,
+                                                            bg_color=self.first_color, font=("Microsoft YaMel U1 Light", 9))
+                            recode_match_error.configure(text_color='red')
+                            recode_match_error.place(x=0, y=3)
+                            
+                        else:
+                            self.users[user_name] = password
+                            data = open('database.txt', 'w')
+                            data.write(str(self.users))
+                            
+                            self.user = user_name
+                            self.login_status = True
 
-                        time.sleep(1)
-                        self.switch_frames(mainFrame, 'homepage')
+                            time.sleep(1)
+                            self.switch_frames(mainFrame, 'homepage')
         
 
 
@@ -440,7 +468,7 @@ class App:
             user_title.configure(text_color=self.secondary_color)
             user_title.place(x=15, y=15)
             
-        # Mode Change
+        # change mode button
         mode_img = ctk.CTkImage(dark_image=Image.open('static/dark_Mode.png'), light_image=Image.open('static/white_Mode.png'),
                                 size=(35, 35))
         mode_button = ctk.CTkButton(mainFrame, text='', image=mode_img, height=15, width=35, corner_radius=60,
@@ -474,10 +502,11 @@ class App:
         time.sleep(1)
         self.homepage.place_forget()
         
-        self.homepage = self.HomePage(self.app, height=self.frame_height, width=self.frame_width)
+        self.homepage = self.HomePage()
         self.homepage.place(x=0, y=0)
+ 
         
-    # Mode Changing
+    # Change the appearence mode
     def change_mode(self):
         
         if self.appearance_mode == 'dark':
