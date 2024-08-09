@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 import time
-from tkinter import PhotoImage
+import ast
 
 
 
@@ -17,7 +17,15 @@ class App:
         self.frame_height = 500
         
         self.login_status = False
-        self.users = {"riyas":"riyas777", "rishana":"rinu@123", "Shamil":"shanumon", "Shaha":"shaimol", "a":"aaa"}
+        
+
+        data = open('database.txt', 'r')
+        data = data.read()
+        # Convert the string to a dictionary
+        self.users = ast.literal_eval(data)
+
+        
+        
         self.user = None
         
         if appearance_mode == "dark":
@@ -353,6 +361,9 @@ class App:
                         
                     else:
                         self.users[user_name] = password
+                        data = open('database.txt', 'w')
+                        data.write(str(self.users))
+                        
                         self.user = user_name
                         self.login_status = True
 
